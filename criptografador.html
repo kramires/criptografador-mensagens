@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criptografador de Mensagens</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: linear-gradient(145deg, #2a2a2a 0%, #1f1f1f 100%);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(107, 142, 35, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #b8b8b8;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(145deg, #252525 0%, #1e1e1e 100%);
+            border-radius: 8px;
+            border-left: 4px solid #6b8e23;
+            border: 1px solid rgba(107, 142, 35, 0.2);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            color: #d4af37;
+            margin-bottom: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c0c0c0;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #3a3a3a;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #6b8e23;
+            box-shadow: 0 0 0 3px rgba(107, 142, 35, 0.2);
+            background: #1f1f1f;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        button {
+            background: linear-gradient(145deg, #556b2f 0%, #6b8e23 100%);
+            color: #ffffff;
+            border: 1px solid rgba(107, 142, 35, 0.5);
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(107, 142, 35, 0.5);
+            background: linear-gradient(145deg, #6b8e23 0%, #7a9f2f 100%);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #1a1a1a;
+            border-radius: 6px;
+            border: 1px solid #3a3a3a;
+            word-wrap: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+            color: #d4af37;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .result-label {
+            font-size: 0.9em;
+            color: #b8b8b8;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .info-box {
+            background: linear-gradient(145deg, #2a2a2a 0%, #1f1f1f 100%);
+            border-left: 4px solid #6b8e23;
+            border: 1px solid rgba(107, 142, 35, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #c0c0c0;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #d4af37;
+        }
+
+        .copy-btn, .clear-btn {
+            background: linear-gradient(145deg, #4a5a2a 0%, #556b2f 100%);
+            margin-top: 10px;
+            font-size: 0.9em;
+            padding: 8px 20px;
+            width: auto;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .copy-btn:hover, .clear-btn:hover {
+            box-shadow: 0 5px 15px rgba(107, 142, 35, 0.5);
+            background: linear-gradient(145deg, #556b2f 0%, #6b8e23 100%);
+        }
+
+        .clear-btn {
+            background: linear-gradient(145deg, #5a3a2a 0%, #6b4523 100%);
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(145deg, #6b4523 0%, #7a5533 100%);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .button-group button {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #3a3a3a;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #6b8e23;
+            box-shadow: 0 0 0 3px rgba(107, 142, 35, 0.2);
+            background: #1f1f1f;
+        }
+
+        .date-display {
+            background: linear-gradient(145deg, #2a2a2a 0%, #1f1f1f 100%);
+            border-left: 4px solid #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #d4af37;
+            font-weight: 500;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .error {
+            background: linear-gradient(145deg, #3a1f1f 0%, #2a1515 100%);
+            border-left: 4px solid #8b4513;
+            border: 1px solid rgba(139, 69, 19, 0.3);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .success {
+            background: linear-gradient(145deg, #1f2a1f 0%, #152a15 100%);
+            border-left: 4px solid #6b8e23;
+            border: 1px solid rgba(107, 142, 35, 0.3);
+            color: #90ee90;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Criptografador de Mensagens</h1>
+        <p class="subtitle">Criptografia segura com chave compartilhada</p>
+
+        <div class="info-box">
+            <strong>ℹ️ Como funciona:</strong>
+            <p>1. Configure uma "Seed" (senha mestre) compartilhada com seus contatos</p>
+            <p>2. A chave de criptografia é gerada automaticamente usando apenas a Seed</p>
+            <p>3. Todos que conhecem a Seed podem criptografar/descriptografar mensagens a qualquer momento</p>
+            <p>4. As mensagens podem ser descriptografadas independentemente da data de criação</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">⚙️ Configuração</div>
+            <label for="seed">Seed (Senha Mestre) - Compartilhe apenas com pessoas confiáveis:</label>
+            <input type="password" id="seed" placeholder="Digite a seed compartilhada">
+            <button onclick="toggleSeedVisibility()">👁️ Mostrar/Ocultar Seed</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🔐 Criptografar / Descriptografar Mensagem</div>
+            <label for="operationMode">Selecione a operação:</label>
+            <select id="operationMode" onchange="updatePlaceholder()">
+                <option value="encrypt">🔒 Criptografar Mensagem</option>
+                <option value="decrypt">🔓 Descriptografar Mensagem</option>
+            </select>
+            <label for="messageInput" id="messageLabel">Mensagem para criptografar:</label>
+            <textarea id="messageInput" placeholder="Digite sua mensagem aqui..."></textarea>
+            <div class="button-group">
+                <button id="actionButton" onclick="processMessage()">🔐 Criptografar</button>
+                <button class="clear-btn" onclick="clearMessage()">🗑️ Limpar</button>
+            </div>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle visibilidade da seed
+        function toggleSeedVisibility() {
+            const seedInput = document.getElementById('seed');
+            seedInput.type = seedInput.type === 'password' ? 'text' : 'password';
+        }
+
+        // Atualizar placeholder e label baseado no modo selecionado
+        function updatePlaceholder() {
+            const mode = document.getElementById('operationMode').value;
+            const messageInput = document.getElementById('messageInput');
+            const messageLabel = document.getElementById('messageLabel');
+            const actionButton = document.getElementById('actionButton');
+
+            if (mode === 'encrypt') {
+                messageInput.placeholder = 'Digite sua mensagem aqui...';
+                messageLabel.textContent = 'Mensagem para criptografar:';
+                actionButton.textContent = '🔐 Criptografar';
+            } else {
+                messageInput.placeholder = 'Cole a mensagem criptografada aqui...';
+                messageLabel.textContent = 'Mensagem criptografada:';
+                actionButton.textContent = '🔓 Descriptografar';
+            }
+            // Limpar resultado ao mudar o modo
+            document.getElementById('result').innerHTML = '';
+        }
+
+        // Limpar mensagem
+        function clearMessage() {
+            document.getElementById('messageInput').value = '';
+            document.getElementById('result').innerHTML = '';
+        }
+
+        // Derivar chave apenas da seed usando PBKDF2
+        async function deriveKey(seed) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(seed);
+            
+            // Importar a seed como chave base
+            const keyMaterial = await crypto.subtle.importKey(
+                'raw',
+                data,
+                { name: 'PBKDF2' },
+                false,
+                ['deriveBits', 'deriveKey']
+            );
+
+            // Derivar chave usando PBKDF2
+            const salt = encoder.encode('criptografador-salt-v1');
+            const key = await crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: salt,
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                keyMaterial,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['encrypt', 'decrypt']
+            );
+
+            return key;
+        }
+
+        // Processar mensagem (criptografar ou descriptografar)
+        async function processMessage() {
+            const mode = document.getElementById('operationMode').value;
+            if (mode === 'encrypt') {
+                await encryptMessage();
+            } else {
+                await decryptMessage();
+            }
+        }
+
+        // Criptografar mensagem
+        async function encryptMessage() {
+            const seed = document.getElementById('seed').value;
+            const message = document.getElementById('messageInput').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!seed) {
+                resultDiv.innerHTML = '<div class="error">❌ Por favor, configure a Seed primeiro!</div>';
+                return;
+            }
+
+            if (!message) {
+                resultDiv.innerHTML = '<div class="error">❌ Por favor, digite uma mensagem para criptografar!</div>';
+                return;
+            }
+
+            try {
+                const key = await deriveKey(seed);
+                
+                const encoder = new TextEncoder();
+                const data = encoder.encode(message);
+
+                // Gerar IV (Initialization Vector) aleatório
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+
+                // Criptografar
+                const encrypted = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    data
+                );
+
+                // Combinar IV + dados criptografados e converter para base64
+                const combined = new Uint8Array(iv.length + encrypted.byteLength);
+                combined.set(iv, 0);
+                combined.set(new Uint8Array(encrypted), iv.length);
+
+                const base64 = btoa(String.fromCharCode(...combined));
+                const encryptedMessage = `CRIPTO:${base64}`;
+
+                resultDiv.innerHTML = `
+                    <div class="success">✅ Mensagem criptografada com sucesso!</div>
+                    <div class="result-label">Mensagem criptografada:</div>
+                    <div class="result" id="outputText">${encryptedMessage}</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'outputText')">📋 Copiar</button>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro ao criptografar: ${error.message}</div>`;
+            }
+        }
+
+        // Descriptografar mensagem
+        async function decryptMessage() {
+            const seed = document.getElementById('seed').value;
+            const encryptedMessage = document.getElementById('messageInput').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!seed) {
+                resultDiv.innerHTML = '<div class="error">❌ Por favor, configure a Seed primeiro!</div>';
+                return;
+            }
+
+            if (!encryptedMessage) {
+                resultDiv.innerHTML = '<div class="error">❌ Por favor, cole a mensagem criptografada!</div>';
+                return;
+            }
+
+            try {
+                // Remover prefixo "CRIPTO:" se existir
+                let base64 = encryptedMessage.trim();
+                if (base64.startsWith('CRIPTO:')) {
+                    base64 = base64.substring(7);
+                }
+
+                // Decodificar base64
+                const combined = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+
+                // Extrair IV (primeiros 12 bytes) e dados criptografados
+                const iv = combined.slice(0, 12);
+                const encrypted = combined.slice(12);
+
+                const key = await deriveKey(seed);
+
+                // Descriptografar
+                const decrypted = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    encrypted
+                );
+
+                const decoder = new TextDecoder();
+                const message = decoder.decode(decrypted);
+
+                resultDiv.innerHTML = `
+                    <div class="success">✅ Mensagem descriptografada com sucesso!</div>
+                    <div class="result-label">Mensagem original:</div>
+                    <div class="result" id="outputText">${escapeHtml(message)}</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'outputText')">📋 Copiar</button>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro ao descriptografar: ${error.message}<br><small>Verifique se a Seed está correta.</small></div>`;
+            }
+        }
+
+        // Copiar para área de transferência (corrigido)
+        function copyToClipboard(buttonElement, elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = buttonElement.textContent;
+                buttonElement.textContent = '✓ Copiado!';
+                buttonElement.style.background = 'linear-gradient(145deg, #556b2f 0%, #6b8e23 100%)';
+                setTimeout(() => {
+                    buttonElement.textContent = originalText;
+                    buttonElement.style.background = 'linear-gradient(145deg, #4a5a2a 0%, #556b2f 100%)';
+                }, 2000);
+            }).catch(err => {
+                alert('Erro ao copiar: ' + err);
+            });
+        }
+
+        // Escapar HTML para segurança
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Permitir Ctrl+Enter para processar mensagem
+        document.getElementById('messageInput').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                processMessage();
+            }
+        });
+    </script>
+</body>
+</html>
